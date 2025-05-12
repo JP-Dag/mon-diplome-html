@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attestation d'Accomplissement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .diploma-container, .diploma-container * {
+                visibility: visible;
+            }
+            .diploma-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 20px; /* Ajuster pour l'impression */
+                box-shadow: none;
+                border: none;
+            }
+            .no-print {
+                display: none;
+            }
+            .input-nom-diplome {
+                border: none !important;
+                background-color: transparent !important;
+                font-size: 1.5em !important; /* Ajuster si besoin */
+                text-align: center !important;
+                font-weight: bold !important;
+                color: #003366 !important; /* S'assurer que la couleur est visible à l'impression */
+            }
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8; /* Fond général de la page */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .diploma-container {
+            background-color: #ffffff;
+            border: 10px solid #d4af37; /* Or vieilli */
+            border-radius: 10px;
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 800px; /* Format A4 paysage approximatif */
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            text-align: center;
+            color: #333;
+            position: relative; /* Pour les éléments décoratifs */
+        }
+
+        .diploma-container::before, .diploma-container::after { /* Éléments décoratifs */
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            /* Utilisation d'un SVG simple pour éviter les problèmes de chargement d'images externes lors de l'impression ou de la sauvegarde */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90' fill='%23d4af37'%3E%E2%9C%AAs%3C/text%3E%3C/svg%3E");
+            background-size: contain;
+            opacity: 0.6;
+        }
+        .diploma-container::before {top: 20px; left: 20px;}
+        .diploma-container::after {bottom: 20px; right: 20px; transform: rotate(180deg);}
+
+
+        .diploma-title {
+            font-family: 'Parisienne', cursive;
+            font-size: 3.5em;
+            color: #b8860b; /* Or foncé */
+            margin-bottom: 20px;
+        }
+
+        .diploma-subtitle {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .recipient-text {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .input-nom-diplome {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #003366; /* Bleu marine */
+            border: 2px dashed #ccc;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+            width: 80%;
+            margin: 0 auto 30px auto;
+            display: block;
+        }
+        
+        .input-nom-diplome:focus {
+            outline: none;
+            border-color: #b8860b;
+        }
+
+        .module-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .module-name {
+            font-weight: bold;
+            color: #0056b3; /* Bleu plus vif */
+        }
+
+        .skills-section {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .skills-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .skills-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 400px; /* Pour centrer la liste des compétences */
+        }
+
+        .skills-list li {
+            margin-bottom: 8px;
+            font-size: 1em;
+            display: flex;
+            justify-content: space-between;
+        }
+        .skills-list li .skill-name {
+            font-weight: 600;
+        }
+        .skills-list li .skill-level {
+            color: #0056b3;
+        }
+
+
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .signature-block {
+            width: 45%;
+            text-align: center;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #555;
+            margin-bottom: 5px;
+            height: 30px; /* Espace pour la signature "manuscrite" */
+        }
+
+        .signature-label {
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+        .ai-signature-name {
+            font-family: 'Parisienne', cursive;
+            font-size: 1.5em;
+            color: #b8860b;
+        }
+
+        .date-issued {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .print-button {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        .print-button:hover {
+            background-color: #003366;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="diploma-container">
+        <div class="diploma-title">Attestation d'Accomplissement</div>
+        <div class="diploma-subtitle">délivrée à</div>
+
+        <input type="text" id="nomEleve" class="input-nom-diplome" placeholder="Ton Prénom et Nom ici">
+
+        <div class="module-text">
+            Pour avoir complété avec succès le module de mathématiques :<br>
+            <span id="moduleName" class="module-name">Problèmes du Premier Degré</span>
+        </div>
+
+        <div class="skills-section">
+            <div class="skills-title">Compétences Transversales Évaluées :</div>
+            <ul class="skills-list" id="skillsList">
+                <li><span class="skill-name">S'approprier :</span> <span class="skill-level" id="compApproprier">Niveau X/4</span></li>
+                <li><span class="skill-name">Analyser/Raisonner :</span> <span class="skill-level" id="compAnalyser">Niveau Y/4</span></li>
+                <li><span class="skill-name">Réaliser :</span> <span class="skill-level" id="compRealiser">Niveau Z/4</span></li>
+                <li><span class="skill-name">Valider :</span> <span class="skill-level" id="compValider">Niveau W/4</span></li>
+                <li><span class="skill-name">Communiquer :</span> <span class="skill-level" id="compCommuniquer">Niveau V/4</span></li>
+            </ul>
+            <p id="appreciationGenerale" class="text-center mt-4 text-sm italic text-gray-700">
+                Message d'appréciation de l'IA...
+            </p>
+        </div>
+        
+        <div class="signature-section">
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-label">L'Enseignant(e)</div>
+            </div>
+            <div class="signature-block">
+                <div class="signature-line"><span class="ai-signature-name">Gemini IA</span></div>
+                <div class="signature-label">Ton Assistant(e) IA Pédagogique</div>
+            </div>
+        </div>
+
+        <div id="dateEmission" class="date-issued">
+            Délivré le : </div>
+    </div>
+
+    <button onclick="imprimerDiplome()" class="print-button no-print">Imprimer mon Attestation</button>
+    <button onclick="remplirExemplePourTest()" class="print-button no-print mt-2 bg-green-600 hover:bg-green-700">Remplir avec Exemple (Test)</button>
+
+
+    <script>
+        // Fonction pour mettre à jour le diplôme avec des données dynamiques
+        // Ces données proviendraient de l'évaluation de l'IA
+        function mettreAJourDiplome(donnees) {
+            // Le nom de l'élève est saisi manuellement, donc on ne le met pas à jour ici,
+            // sauf si on a une logique pour le pré-remplir (ex: pseudo de l'élève).
+            // if (donnees.nomEleve) {
+            //     document.getElementById('nomEleve').value = donnees.nomEleve;
+            // }
+
+            document.getElementById('moduleName').textContent = donnees.moduleNom || "Module Non Spécifié";
+            
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = ''; // Vider la liste pour la reconstruire
+
+            if (donnees.competences && typeof donnees.competences === 'object') {
+                for (const [nom, niveau] of Object.entries(donnees.competences)) {
+                    const li = document.createElement('li');
+                    const spanNom = document.createElement('span');
+                    spanNom.className = 'skill-name';
+                    spanNom.textContent = nom + " :"; // Exemple: "S'approprier :"
+                    const spanNiveau = document.createElement('span');
+                    spanNiveau.className = 'skill-level';
+                    spanNiveau.textContent = niveau; // Exemple: "Niveau 3/4" ou "Maîtrise Satisfaisante"
+                    
+                    li.appendChild(spanNom);
+                    li.appendChild(spanNiveau);
+                    skillsList.appendChild(li);
+                }
+            } else {
+                 skillsList.innerHTML = "<li>Aucune donnée de compétence fournie.</li>";
+            }
+
+
+            document.getElementById('appreciationGenerale').textContent = donnees.appreciation || "Bravo pour tes efforts !";
+            
+            const date = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateEmission').textContent = "Délivré le : " + (donnees.dateEmission || date.toLocaleDateString('fr-FR', options));
+        }
+
+        // Fonction pour déclencher l'impression
+        function imprimerDiplome() {
+            window.print();
+        }
+        
+        // Fonction d'exemple pour tester le remplissage (à appeler manuellement ou par l'IA pour démo)
+        function remplirExemplePourTest() {
+            const donneesExemple = {
+                moduleNom: "Résolution de Problèmes du Premier Degré",
+                competences: {
+                    "S'approprier": "Maîtrise Satisfaisante (3/4)",
+                    "Analyser/Raisonner": "Excellente Maîtrise (4/4)",
+                    "Réaliser": "Maîtrise Satisfaisante (3/4)",
+                    "Valider": "Bonne Maîtrise (3/4)",
+                    "Communiquer": "Très Bonne Maîtrise (4/4)"
+                },
+                appreciation: "Excellent travail sur ce module ! Tu as montré une très bonne capacité à analyser les problèmes et à communiquer tes raisonnements. Continue comme ça !",
+                // dateEmission: "12 mai 2025" // Si on veut une date fixe pour l'exemple
+            };
+            mettreAJourDiplome(donneesExemple);
+            // Pré-remplir le nom pour l'exemple, l'élève peut le modifier
+            document.getElementById('nomEleve').value = "Jean Élève Modèle"; 
+        }
+
+        // Initialiser la date d'émission au chargement de la page
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const date = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateEmission').textContent = "Délivré le : " + date.toLocaleDateString('fr-FR', options);
+        });
+
+    </script>
+
+</body>
+</html>
